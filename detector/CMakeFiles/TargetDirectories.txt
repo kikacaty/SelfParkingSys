@@ -1,0 +1,3 @@
+/home/yulongc/EECS450/detector/CMakeFiles/rebuild_cache.dir
+/home/yulongc/EECS450/detector/CMakeFiles/Detector.dir
+/home/yulongc/EECS450/detector/CMakeFiles/edit_cache.dir
