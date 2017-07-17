@@ -23,6 +23,8 @@ bool is_line_near(Vec4f l_0, Vec4f l_1, float eps = 1, float k = 300) {
 	return abs_f(l_0[0] - l_1[0]) < eps && abs_f(l_0[1] - l_1[1]) < k;
 }
 
+void detect_line(Mat &src);
+
 int main( int argc, char** argv )
 {
 	const char* filename = argc >= 2 ? argv[1] : "1.jpg";
@@ -32,14 +34,19 @@ int main( int argc, char** argv )
 		return -1;
 
 	namedWindow("Detected Lines", WINDOW_NORMAL);
-	resizeWindow("Detected Lines", 600,600);
+	resizeWindow("Detected Lines", 1200,1200);
 	
 	for(;;)
 	{
 		Mat frame;
+		for (int i = 0; i < 10; i++)
 		cap >> frame; // get a new frame from camera
 		
-		if(waitKey(30) >= 0) break;
+		if (frame.empty()) break;
+
+		detect_line(frame);
+
+		if(waitKey(10) < 0) break;
 	}
 
 	return 0;	
@@ -47,9 +54,10 @@ int main( int argc, char** argv )
 }
 
 void detect_line(Mat &src) {
+
 	Mat thres, dst, cdst;
 	threshold( src, thres, 150, 255, 0);
-	thres(Rect(0, 0, thres.cols, thres.rows/4)) = 0;
+	thres(Rect(0, 0, thres.cols/4, thres.rows)) = 0;
 	Canny(thres, dst, 50, 200, 3);
 	cvtColor(dst, cdst, CV_GRAY2BGR);
 
@@ -133,7 +141,7 @@ void detect_line(Mat &src) {
 	for( size_t i = 0; i < new_lines.size(); i++ )
 	{
 		Vec4f l = new_lines[i];
-		line( cdst, Point(l[2], l[2]*l[0]+l[1]), Point(l[3], l[3]*l[0] + l[1]), Scalar(0,0,255), 1, CV_AA);
+		line( src, Point(l[2], l[2]*l[0]+l[1]), Point(l[3], l[3]*l[0] + l[1]), Scalar(0,0,255), 10, CV_AA);
 	}
 
 #endif
@@ -142,11 +150,10 @@ void detect_line(Mat &src) {
 	//resizeWindow("Source", 600,600);
 	//imshow("Source", thres);
 
-	imshow("Detected Lines", cdst);
+	imshow("Detected Lines", src);
 
-	//waitKey();
+//	waitKey();
 
-	return 0; 
 }
 
 void filter_region(Mat image) {
